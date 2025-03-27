@@ -1,0 +1,21 @@
+<h1>Track Your Requests</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Service Type</th>
+            <th>Status</th>
+            <th>Submitted At</th>
+            <th>Resolved At</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in requests %}
+        <tr>
+            <td>{{ request.service_type }}</td>
+            <td>{{ request.status }}</td>
+            <td>{{ request.submitted_at }}</td>
+            <td>{{ request.resolved_at|default:"N/A" }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

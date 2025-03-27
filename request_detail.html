@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+
+{% block title %}Request #{{ service_request.id }} - Gas Utility Customer Services{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-clipboard-list me-2"></i> Request #{{ service_request.id }}
+                </h4>
+                <span class="badge {% if service_request.status == 'new' %}bg-info{% elif service_request.status == 'in_progress' %}bg-primary{% elif service_request.status == 'waiting' %}bg-warning{% elif service_request.status == 'resolved' %}bg-success{% elif service_request.status == 'closed' %}bg-secondary{% endif %} fs-6">
+                    {{ service_request.get_status_display }}
+                </span>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ service_request.title }}</h5>
+                <div class="mb-3">
+                    <span class="badge bg-secondary">{{ service_request.request_type.name }}</span>
+                    <small class="text-muted ms-2">
+                        <i class="fas fa-calendar-alt me-1"></i> Created: {{ service_request.created_at|date:"F d, Y, g:i a" }}
+                    </small>
+                    {% if service_request.resolved_at %}
+                    <small class="text-muted ms-2">
+                        <i class="fas fa-check-circle me-1"></i> Resolved: {{ service_request.resolved_at|date:"F d, Y, g:i a" }}
+                    </small>
+                    {% endif %}
+                </div>
+                
+                <div class="card bg-dark mb-4">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Description</h6>
+                        <p class="card-text">{{ service_request.description|linebreaks }}</p>
+                    </div>
+                </div>
+                
+                {% if service_request.attachments.exists %}
+                <div class="mb-4">
+                    <h6 class="mb-3">Attachments</h6>
+                    <div class="list-group">
+                        {% for attachment in service_request.attachments.all %}
+                        <a href="{{ attachment.file.url }}" class="list-group-item list-group-item-action bg-dark" target="_blank">
+                            <i class="fas fa-paperclip me-2"></i> 
+                            {{ attachment.file.name|slice:"19:" }}
+                            <small class="text-muted ms-2">
+                                <i class="fas fa-calendar-alt me-1"></i> {{ attachment.uploaded_at|date:"M d, Y" }}
+                            </small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="alert alert-dark">
+                    <div class="d-flex align-items-center">
+                        <div class="me-auto">
+                            <strong><i class="fas fa-info-circle me-2"></i> Need Help?</strong>
+                            <p class="mb-0">If you have questions about this request, add a comment below or call our customer service line at (555) 123-4567.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Comments Section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0"><i class="fas fa-comments me-2"></i> Comments</h5>
+            </div>
+            <div class="card-body">
+                {% if service_request.comments.exists %}
+                <div class="mb-4">
+                    {% for comment in service_request.comments.all %}
+                    <div class="d-flex mb-3">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-user-circle fs-1 text-secondary"></i>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <div class="d-flex align-items-center">
+                                <h6 class="mb-0">
+                                    {{ comment.user.get_full_name }}
+                                    {% if comment.user.is_staff %}
+                                    <span class="badge bg-info ms-2">Support Staff</span>
+                                    {% endif %}
+                                </h6>
+                                <small class="text-muted ms-2">{{ comment.created_at|date:"M d, Y, g:i a" }}</small>
+                            </div>
+                            <p class="mb-0 mt-2">{{ comment.comment|linebreaks }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center py-3">No comments yet</p>
+                {% endif %}
+                
+                <form method="post" action="{% url 'add_comment' service_request.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="{{ comment_form.comment.id_for_label }}" class="form-label">Add a Comment</label>
+                        <textarea name="{{ comment_form.comment.name }}" id="{{ comment_form.comment.id_for_label }}" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i> Post Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Request Status</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="position-relative">
+                        <div class="progress" style="height: 4px; width: 300px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 
+                            {% if service_request.status == 'new' %}20%
+                            {% elif service_request.status == 'in_progress' %}40%
+                            {% elif service_request.status == 'waiting' %}60%
+                            {% elif service_request.status == 'resolved' %}80%
+                            {% elif service_request.status == 'closed' %}100%
+                            {% endif %}"></div>
+                        </div>
+                        <div class="position-absolute top-0 start-0 translate-middle">
+                            <div class="rounded-circle bg-{% if service_request.status != 'new' %}dark{% else %}success{% endif %} border border-2 border-light p-2">
+                                <i class="fas fa-clipboard-list text-light"></i>
+                            </div>
+                            <div class="mt-2 text-center small">New</div>
+                        </div>
+                        <div class="position-absolute top-0 start-25 translate-middle">
+                            <div class="rounded-circle bg-{% if service_request.status != 'in_progress' and service_request.status != 'waiting' and service_request.status != 'resolved' and service_request.status != 'closed' %}dark{% else %}success{% endif %} border border-2 border-light p-2">
+                                <i class="fas fa-tools text-light"></i>
+                            </div>
+                            <div class="mt-2 text-center small">In Progress</div>
+                        </div>
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <div class="rounded-circle bg-{% if service_request.status != 'waiting' and service_request.status != 'resolved' and service_request.status != 'closed' %}dark{% else %}success{% endif %} border border-2 border-light p-2">
+                                <i class="fas fa-clock text-light"></i>
+                            </div>
+                            <div class="mt-2 text-center small">Waiting</div>
+                        </div>
+                        <div class="position-absolute top-0 start-75 translate-middle">
+                            <div class="rounded-circle bg-{% if service_request.status != 'resolved' and service_request.status != 'closed' %}dark{% else %}success{% endif %} border border-2 border-light p-2">
+                                <i class="fas fa-check text-light"></i>
+                            </div>
+                            <div class="mt-2 text-center small">Resolved</div>
+                        </div>
+                        <div class="position-absolute top-0 start-100 translate-middle">
+                            <div class="rounded-circle bg-{% if service_request.status != 'closed' %}dark{% else %}success{% endif %} border border-2 border-light p-2">
+                                <i class="fas fa-flag-checkered text-light"></i>
+                            </div>
+                            <div class="mt-2 text-center small">Closed</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card bg-dark mb-3">
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Current Status</h6>
+                        <p class="card-text">
+                            {% if service_request.status == 'new' %}
+                            Your request has been received and is awaiting assignment to a support representative.
+                            {% elif service_request.status == 'in_progress' %}
+                            Your request is being processed by our support team.
+                            {% elif service_request.status == 'waiting' %}
+                            We are waiting for additional information to process your request.
+                            {% elif service_request.status == 'resolved' %}
+                            Your request has been resolved. If you're satisfied with the resolution, no further action is needed.
+                            {% elif service_request.status == 'closed' %}
+                            This request has been closed. If you need further assistance, please create a new request.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <a href="{% url 'request_list' %}" class="btn btn-outline-secondary w-100">
+                    <i class="fas fa-arrow-left me-2"></i> Back to All Requests
+                </a>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i> Customer Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Name:</strong></p>
+                    <p>{{ service_request.customer.get_full_name }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Account #:</strong></p>
+                    <p>{{ service_request.customer.customerprofile.account_number }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Address:</strong></p>
+                    <p>{{ service_request.customer.customerprofile.address }}</p>
+                </div>
+                <div class="mb-3">
+                    <p class="mb-1"><strong>Contact:</strong></p>
+                    <p>{{ service_request.customer.customerprofile.phone_number }}</p>
+                    <p>{{ service_request.customer.email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

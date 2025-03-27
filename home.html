@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Gas Utility Customer Services{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h1 class="display-4 mb-4">Welcome to Gas Utility Customer Services</h1>
+            <p class="lead">We're here to provide you with reliable gas service and responsive customer support.</p>
+            <p class="mb-4">Our online service portal allows you to submit service requests, track their status, and view your account information - all in one place.</p>
+            
+            {% if user.is_authenticated %}
+            <div class="d-grid gap-3 d-md-flex">
+                <a href="{% url 'create_request' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus-circle me-2"></i> Create Service Request
+                </a>
+                <a href="{% url 'request_list' %}" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-list me-2"></i> View My Requests
+                </a>
+            </div>
+            {% else %}
+            <div class="d-grid gap-3 d-md-flex">
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i> Login
+                </a>
+                <a href="{% url 'signup' %}" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-user-plus me-2"></i> Sign Up
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-6 mt-5 mt-lg-0 text-center">
+            <div class="card shadow-sm bg-dark">
+                <div class="card-body py-5">
+                    <i class="fas fa-fire text-warning" style="font-size: 6rem;"></i>
+                    <h3 class="mt-4">Gas Utility Services</h3>
+                    <p class="card-text">Providing essential services to our community</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <h2 class="text-center mb-5">Our Services</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 bg-dark">
+                <div class="card-body text-center">
+                    <i class="fas fa-tools text-primary mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="card-title">Service Requests</h3>
+                    <p class="card-text">Submit service requests online, including repairs, installations, and inspections.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 bg-dark">
+                <div class="card-body text-center">
+                    <i class="fas fa-search-location text-success mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="card-title">Request Tracking</h3>
+                    <p class="card-text">Track the status of your service requests in real-time and receive updates.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 bg-dark">
+                <div class="card-body text-center">
+                    <i class="fas fa-user-cog text-warning mb-3" style="font-size: 3rem;"></i>
+                    <h3 class="card-title">Account Management</h3>
+                    <p class="card-text">View and manage your account information, including service history.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card bg-dark">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4">Emergency Gas Service</h3>
+                    <div class="alert alert-danger text-center">
+                        <h4 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i> If you smell gas or suspect a gas leak</h4>
+                        <p class="mb-0">Leave the area immediately and call our emergency line: <strong>(555) 999-8888</strong></p>
+                    </div>
+                    <p class="text-center mb-0">Our emergency service is available 24/7, 365 days a year.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
