@@ -1,7 +1,5 @@
 # Gas_utility_Task
 
-# Gas Utility Service - Django Application
-
 ## Overview
 This is a Django-based web application designed to improve customer service management for a gas utility company. The system allows customers to submit service requests, track their status, and access their account information. Additionally, customer support representatives can manage and resolve service requests efficiently.
 
@@ -20,8 +18,7 @@ This is a Django-based web application designed to improve customer service mana
 - **Frontend**: HTML, CSS, JavaScript (Optional: React or Vue.js for a dynamic UI)
 - **Database**: PostgreSQL / MySQL
 - **Authentication**: Django authentication system
-- **Deployment**: Docker, AWS / Heroku (Optional)
-
+  
 ## Installation & Setup
 ### Prerequisites
 - Python 3.x
